@@ -145,6 +145,7 @@ var dialog = [
 		text:"Click to Continue"
 	},
 	{
+		thirdPersonOut:true,
 		thirdPerson:null,
 		avatar:"So, I see you have your\nearphones with you.\nWere you listening\nto music?",
 		partner:null,
@@ -193,6 +194,7 @@ var dialog = [
 		text:"Click to Continue"
 	},
 	{
+		partnerOut:true,
 		thirdPerson:null,
 		avatar:null,
 		partner:null,
@@ -276,11 +278,15 @@ function nextDialog() {
 		window.location.href = redirectUrl;
 	}
 
-	if (i == 7) {
+	d = dialog[i++];
+
+	if (d.thirdPersonOut) {
 		thirdPerson.visible = false;
 	}
 
-	d = dialog[i++];
+	if (d.partnerOut) {
+		partner.visible = false;
+	}
 
 	text.visible = false;
 	text.setText(d.text)
