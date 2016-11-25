@@ -1,0 +1,321 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+	<title>Survey Animation</title>
+	<script type="text/javascript" src="js/phaser.min.js"></script>
+    <style type="text/css">
+        body {margin: 0;}
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+////////////////////////////////////////////////////////////////////////
+// TIM, THIS IS THE JUNK YOU'LL LIKELY WANT TO MESS WITH
+
+// Set these based on user scenario - or get from url?
+var avatarImage = "assets/avatar.png"; // TODO: get real image
+
+// will these be dynamic? dunno. asked on slack.
+var thirdPersonImage = "assets/thirdPerson.png";
+var partnerImage = "assets/partner.png";
+
+// same is with the bus, this is where they'll go after finishing
+var redirectUrl = window.location.href;
+
+// these are the vars required for the survey - put in real refs here
+var identify = true; // TODO: get real identify or not
+var avatarName = "Sonic"; // TODO: get real name
+var q39 = "kitten huffing"; // TODO: get real q39
+var q48 = "open to new experience" // TODO: get real q48
+var q55 = "dancehall/ska fusion"; // TODO: get real q55
+var q56 = "ska/dancehall fusion"; // TODO: get real q56
+var q57 = "conservative"; // TODO: get real q57
+
+////////////////////////////////////////////////////////////////////////
+
+// these are derived from answers above
+var politics = {
+	conservative:{
+		news:"Fox News",
+		opp:"liberal"
+	},
+	liberal:{
+		news:"MSNBC",
+		opp:"conservative"
+	},
+	neither:{
+		news:"PBS",
+		opp:"neither"
+	}
+};
+var q57_opp = politics[q57].opp;
+var news = politics[q57].news;
+var news_opp = politics[q57].opp.opp;
+
+if (identify) {
+	name = avatarName
+
+	var reporterFor = news;
+	if (q57 === "neither") {
+		var iAmA = "I like the PBS is neither\nliberal nor conservative."
+	} else {
+		var iAmA = "I am a " + q57 + " as well,\nI watch " + news + "\nall the time."
+	}
+
+	if (q55 === "neutral") {
+		var music = "I don't usually listen to music"
+	} else {
+		var music = "I enjoy listening to\n" + q55 + "."
+	}
+
+	if (q39 === "neutral") {
+		var activity = "No. Thank you.\nYou have a good time."
+	} else {
+		var activity = "Yes, I would love to. I enjoy\n" + q39 + "."
+	}
+} else {
+	name = "Sam";
+
+	var reporterFor = news_opp;
+	if (q57 === "neither") {
+		var iAmA = "Nice to meet you, I am a\nconservative and\nI watch Fox News\nall the time."
+	} else {
+		var iAmA = "I am a " + q57_opp + " as well,\nI watch " + news_opp + "\nall the time."
+	}
+
+	if (q56 === "neutral") {
+		var music = "I don't have a favorite kind\nof music, but I do enjoy listening\nto music all the time."
+	} else {
+		var music = "I enjoy listening to\n" + q56 + "."
+	}
+
+	if (q39 === "neutral") {
+		var activity = "Yes, I would love to. I enjoy\n" + q39 + "."
+	} else {
+		var activity = "No, Thank you. I hate\n" + q39 + "."
+	}
+}
+
+// each element of the array is a simultaneous 'moment' of dialog
+// each character may be saying something at the same time
+var dialog = [
+	{
+		thirdPerson:"This is " + name + ". He is\n" + q48 + "\njust like you, John.",
+		avatar:null,
+		partner:null,
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:"Hehehe",
+		avatar:"Hehehe",
+		partner:"Hehehe",
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:avatarName + ", this is John.\nHe is a reporter for\n" + reporterFor + ".",
+		avatar:null,
+		partner:null,
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:"Nice to meet you.\n" + iAmA,
+		partner:null,
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:null,
+		partner:"Great, nice to meet you too.",
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:"You guys get to know\neach other, I have to go get\nsome things done.\nSee you later.",
+		avatar:null,
+		partner:null,
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:"Later",
+		partner:"Later",
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:"So, I see you have your\nearphones with you.\nWere you listening\nto music?",
+		partner:null,
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:null,
+		partner:"Yes, I was. Do you often\nlisten to music?\nWhat kind of music do\nyou listen to?",
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:music,
+		partner:null,
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:null,
+		partner:"I'm sorry " + name + ";\nI need to rush off for a\nmeeting. But I did\nenjoy meeting with you.\nWe should keep in touch.",
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:null,
+		partner:"I am actually planning to do\n" + q39 + "\nover the weekend.\nWould you like to join me?",
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:activity,
+		partner:null,
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:null,
+		partner:"Sounds great. Here's my\ncard.\nGive me call. See you soon.\nBye.",
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:"Ok. Bye.",
+		partner:null,
+		text:"Click to Continue"
+	},
+	{
+		thirdPerson:null,
+		avatar:null,
+		partner:null,
+		text:"Section Finished - Click to Continue Survey"
+	}
+];
+
+// dialog index
+var i = 0;
+
+var game = new Phaser.Game(800,600,Phaser.CANVAS,'',{preload:preload,create:create,update:update});
+
+var readyForNextEvent = false;
+
+function preload() {
+	game.load.image('cafe', 'assets/cafe.png');
+	game.load.image('thirdPerson', thirdPersonImage);
+	game.load.image('avatar', avatarImage);
+	game.load.image('partner', partnerImage);
+	game.load.image('bubble', 'assets/speech.png');
+}
+
+function create() {
+	cafe = game.add.sprite(0, 0, 'cafe');
+
+	thirdPerson = game.add.sprite(150, 450, 'thirdPerson');
+	avatar = game.add.sprite(400, 450, 'avatar');
+	partner = game.add.sprite(650, 450, 'partner');
+
+	thirdPersonBubble = game.add.sprite(150, 140, 'bubble')
+	thirdPersonBubble.visible = false
+	avatarBubble = game.add.sprite(350, 140, 'bubble')
+	avatarBubble.visible = false
+	partnerBubble = game.add.sprite(650, 140, 'bubble')
+	partnerBubble.visible = false
+
+	thirdPerson.anchor.setTo(0.5, 0.5);
+	avatar.anchor.setTo(0.5, 0.5);
+	partner.anchor.setTo(0.5, 0.5);
+
+	thirdPersonBubble.anchor.setTo(0.5, 0.5);
+	avatarBubble.anchor.setTo(0.5, 0.5);
+	partnerBubble.anchor.setTo(0.5, 0.5);
+
+	thirdPersonBubble.hide
+
+	thirdPersonSpeech = game.add.text(35, 50, "")
+    thirdPersonSpeech.font = 'Arial Black';
+    thirdPersonSpeech.fontSize = 16;
+
+	avatarSpeech = game.add.text(235, 50, "")
+    avatarSpeech.font = 'Arial Black';
+    avatarSpeech.fontSize = 16;
+
+	partnerSpeech = game.add.text(535, 50, "")
+    partnerSpeech.font = 'Arial Black';
+    partnerSpeech.fontSize = 16;
+
+	text = game.add.text(400, 550, "Click to Begin");
+    text.anchor.set(0.5);
+    text.align = 'center';
+    text.font = 'Arial Black';
+    text.fontSize = 30;
+    text.fontWeight = 'bold';
+    text.stroke = '#000000';
+    text.strokeThickness = 6;
+    text.fill = '#FFFFFF';
+
+    readyForNextEvent = true;
+}
+
+function update() {
+	if (readyForNextEvent && game.input.activePointer.isDown) {
+		readyForNextEvent = false;
+		nextDialog();
+	}
+}
+
+function nextDialog() {
+	if (i >= dialog.length) {
+		window.location.href = redirectUrl;
+	}
+
+	if (i == 7) {
+		thirdPerson.visible = false;
+	}
+
+	d = dialog[i++];
+
+	text.visible = false;
+	text.setText(d.text)
+
+	if (d.thirdPerson === null) {
+		thirdPersonBubble.visible = false;
+		thirdPersonSpeech.setText("");
+	} else {
+		thirdPersonBubble.visible = true;
+		thirdPersonSpeech.setText(d.thirdPerson);
+	}
+
+	if (d.avatar === null) {
+		avatarBubble.visible = false;
+		avatarSpeech.setText("");
+	} else {
+		avatarBubble.visible = true;
+		avatarSpeech.setText(d.avatar);
+	}
+
+	if (d.partner === null) {
+		partnerBubble.visible = false;
+		partnerSpeech.setText("");
+	} else {
+		partnerBubble.visible = true;
+		partnerSpeech.setText(d.partner);
+	}
+
+	setTimeout(function f() {
+		text.visible = true;
+		readyForNextEvent = true;
+	}, 3000);
+}
+
+</script>
+
+</body>
+</html>
