@@ -224,9 +224,13 @@ function create() {
 	avatar = game.add.sprite(400, 450, 'avatar');
 	partner = game.add.sprite(650, 450, 'partner');
 
+	thirdPerson.scale.set(1.5, 1.5);
+	avatar.scale.set(1.5, 1.5);
+	partner.scale.set(1.5, 1.5);
+
 	thirdPersonBubble = game.add.sprite(150, 140, 'bubble')
 	thirdPersonBubble.visible = false
-	avatarBubble = game.add.sprite(350, 140, 'bubble')
+	avatarBubble = game.add.sprite(390, 140, 'bubble')
 	avatarBubble.visible = false
 	partnerBubble = game.add.sprite(650, 140, 'bubble')
 	partnerBubble.visible = false
@@ -245,7 +249,7 @@ function create() {
     thirdPersonSpeech.font = 'Arial Black';
     thirdPersonSpeech.fontSize = 16;
 
-	avatarSpeech = game.add.text(235, 50, "")
+	avatarSpeech = game.add.text(275, 50, "")
     avatarSpeech.font = 'Arial Black';
     avatarSpeech.fontSize = 16;
 
